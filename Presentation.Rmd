@@ -1,0 +1,145 @@
+---
+title: "Cyclistic Bike Share"
+author: "Kevin du Preez"
+date: "2023-05-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prepare 
+
+The purpose of this analysis is to determine what factors can be harnessed to convert casual bike riders into full members for the Cyclistic. 
+
+The aim for this analysis is to use pre-existing data sourced from the Cyclistic database to determine which factors could lead to membership conversion. The data sourced is from April 2022 to April 2023. The data being used tracks the bike type, start and end dateTime, start and end location and membership. 
+
+The data was downloaded from the link provided by Cyclistic. Which can be seen through [this link.](https://divvy-tripdata.s3.amazonaws.com/index.html)
+
+The initial setup for the environment is to install the following packages;
+
+```{r}
+#Package installs
+install.packages('tidyverse')
+install.packages('lubridate')
+install.packages("hms")
+```
+
+Once the packages have been installed, I initialized them through the library function. To do this I ran the following commands;
+```{r}
+#Package inits
+library(tidyverse)
+library(lubridate)
+library(hms)
+library(ggplot2)
+library(scales)
+```
+
+From there, I imported the pre downloaded .csv files and stored them in local variables;
+
+```{r}
+#File imports and associations
+apr_22_04 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202204-divvy-tripdata.csv")
+may_22_05 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202205-divvy-tripdata.csv")
+jun_22_06 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202206-divvy-tripdata.csv")
+jul_22_07 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202207-divvy-tripdata.csv")
+aug_22_08 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202208-divvy-tripdata.csv")
+sep_22_09 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202209-divvy-publictripdata.csv")
+oct_22_10 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202210-divvy-tripdata.csv")
+nov_22_11 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202211-divvy-tripdata.csv")
+dec_22_12 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202212-divvy-tripdata.csv")
+jan_23_01 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202301-divvy-tripdata.csv")
+feb_23_02 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202302-divvy-tripdata.csv")
+mar_23_03 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202303-divvy-tripdata.csv")
+apr_23_04 <- read_csv("/Users/Kevin/Desktop/Capstone/BikeshareData/202304-divvy-tripdata.csv")
+```
+
+Once imported, I bound all the files into a single source. 
+
+```{r}
+#merge all data to work with a single table
+ride_data <- rbind(apr_22_04, may_22_05, jun_22_06, jul_22_07, aug_22_08, sep_22_09, oct_22_10, nov_22_11, dec_22_12, jan_23_01, feb_23_02, mar_23_03, apr_23_04)
+
+```
+
+Now I have a single source from which to pull the data from.
+
+## Process
+
+The initial step was to learn how each membership type uses the bikes differently. The first comparison was to work out the time differences between the membership types to see who was spending more time on the bikes.
+
+```{r}
+#get the time differences between start and end destinations to see how long each rider is run. 
+diff_time <- as_hms(difftime(ride_data$ended_at, ride_data$started_at))
+
+#Take the comparison and create a data frame that allows us to compare the ride times to the membership type of the rider. 
+time_compare <- data.frame(start_time =  ride_data$started_at,
+           end_time = ride_data$ended_at,
+           total_ride_time = diff_time,
+           member_type = ride_data$member_casual)
+```
+
+Gather the month of the year for each ride to compare the membership types rides based on the month of the year. First we get the month and define plottable data.
+
+```{r }
+#Get month of ride
+month <- month(time_compare$start_time, label = TRUE)
+head(month)
+
+#define plottable data
+day_of_week <- wday(time_compare$start_time, label = TRUE)
+mem <- ride_data$member_casual
+bike <- ride_data$rideable_type
+```
+
+I then created a new data.frame to host the data related to the time for each ride then store that in a variable to use when plotting the graphs. This will provide insights into the time of day preference for each member type.
+
+```{r}
+#set new dataframe to host the start and end times of each ride
+time_of_day <- data.frame(start_time =  hour(ride_data$started_at),
+                          end_time = hour(ride_data$ended_at),
+                          member_type = ride_data$member_casual)
+
+time_of_day_compare <- time_of_day %>% 
+  group_by(member_type, start_time) %>% 
+  count(start_time)
+```
+
+## Analyze
+
+Now it's easier to compare the membership types ride data based on the a number of variables. I started by comparing the month preferences for each member type.
+
+```{r}
+plot(types_vs_month)
+```
+
+This shows casual riders operate the most between June and September, whereas the full members are a lot more consistent. Operating thought the year, including the colder months of the year. This suggests that once Cyclistic riders become members, the will continue to to make use of their membership even through the colder months.
+
+Now we have the ability to review the time preference for each membership type.
+
+```{r}
+plot(time_of_day_pref)
+```
+This data shows that members often commute early morning plateauing during the working day and with a major peak post office ours. Converting members from casual to members will need to consider the fact that most riders in the member catagory are every day commuters.
+
+We also get to break down the bike type preference
+
+```{r}
+plot(bike_types_members)
+```
+
+From this we see that casual riders are the only ones using the docked bike type. Offering cheaper memberships on docked bikes can be a draw card for those casual members to move over to full membership.
+
+## Act
+
+To get more full members, Cyclistic should look to capitalize on the docked bike usage and highlight ease of commute as a full member. 
+
+Offering cheaper fees during the colder months will offer insensitive for those casual riders who ride during the cold months to consider moving to a full membership. As we've seen, the full members will continue to consistently use the Cyclistic service, even during the colder weather, whereas casual members usage drops off significantly once the warm weather cools off.
+
+## Wrap-up
+
+As a quick wrap-up the following is suggested to increase the Cyclistic conversion from casual to full memeber:
+* Offer cheaper memberships for colder weather seasons.
+* Capitalise on the casual memebers docked bike preferences
+* Market to the daily commuter to convince the casual rider to take up the service more regularly
