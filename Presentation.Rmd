@@ -11,11 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Prepare 
 
-The purpose of this analysis is to determine what factors can be harnessed to convert casual bike riders into full members for the Cyclistic. 
+The purpose of this analysis is to determine what factors can be harnessed to convert casual bike riders into full members for Cyclistic. 
 
 The aim for this analysis is to use pre-existing data sourced from the Cyclistic database to determine which factors could lead to membership conversion. The data sourced is from April 2022 to April 2023. The data being used tracks the bike type, start and end dateTime, start and end location and membership. 
 
-The data was downloaded from the link provided by Cyclistic. Which can be seen through [this link.](https://divvy-tripdata.s3.amazonaws.com/index.html)
+The data was downloaded from the link provided by Cyclistic. Which can be seen through [this link.](https://divvy-tripdata.s3.amazonaws.com/index.html). 
+
+This data belongs to Cyclistic and therefore we can assume that the bias of the data leans heavily in favour of the Cyclistic organisation as they are the ones collecting and providing the data.
 
 The initial setup for the environment is to install the following packages;
 
@@ -137,9 +139,16 @@ To get more full members, Cyclistic should look to capitalize on the docked bike
 
 Offering cheaper fees during the colder months will offer insensitive for those casual riders who ride during the cold months to consider moving to a full membership. As we've seen, the full members will continue to consistently use the Cyclistic service, even during the colder weather, whereas casual members usage drops off significantly once the warm weather cools off.
 
+Additional data would be useful in mapping the preferences of the casual user. Data such as; 
+* If the casual rider is a tourist or local.
+* Time periods of members subscriptions to see how long they stay members
+* Weather patterns and how the correlate to bike usage. 
+
 ## Wrap-up
 
 As a quick wrap-up the following is suggested to increase the Cyclistic conversion from casual to full memeber:
 * Offer cheaper memberships for colder weather seasons.
 * Capitalise on the casual memebers docked bike preferences
 * Market to the daily commuter to convince the casual rider to take up the service more regularly
+
+
